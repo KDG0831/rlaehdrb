@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오목</title>
+<style>
+  .board {
+    display: grid;
+    grid-template-columns: repeat(15, 40px);
+    grid-template-rows: repeat(15, 40px);
+    gap: 1px;
+    background-color: #f0d9b5;
+    border: 1px solid #000;
+  }
+  .cell {
+    background-color: #eec170;
+    border: 1px solid #000;
+  }
+</style>
+</head>
+<body>
+
+<div class="board" id="board"></div>
+
+<script>
+  const board = document.getElementById('board');
+  const ROWS = 15;
+  const COLS = 15;
+  let currentPlayer = 'black';
+  let gameOver = false;
+
+  // Create the board
+  for (let i = 0; i < ROWS; i++) {
+    for (let j = 0; j < COLS; j++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.row = i;
+      cell.dataset.col = j;
+      cell.addEventListener('click', () => {
+        if (!gameOver && !cell.dataset.color) {
+          cell.style.backgroundColor = currentPlayer;
+          cell.dataset.color = currentPlayer;
+          if (checkWinCondition(parseInt(cell.dataset.row), parseInt(cell.dataset.col))) {
+            alert(currentPlayer + ' wins!');
+            gameOver = true;
+          } else {
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+          }
+        }
+      });
+      board.appendChild(cell);
+    }
+  }
+
+  // Check win condition
+  function checkWinCondition(row, col) {
+    const directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
+    for (const [dx, dy] of directions) {
+      let count = 1;
+      let r = row + dx, c = col + dy;
+      while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board.children[r * COLS + c].dataset.color === currentPlayer) {
+        count++;
+        r += dx;
+        c += dy;
+      }
+      r = row - dx;
+      c = col - dy;
+      while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board.children[r * COLS + c].dataset.color === currentPlayer) {
+        count++;
+        r -= dx;
+        c -= dy;
+      }
+      if (count >= 5) {
+        return true;
+      }
+    }
+    return false;
+  }
+</script>
+
+</body>
+</html>
